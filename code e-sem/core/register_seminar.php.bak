@@ -1,0 +1,159 @@
+<?php session_start(); ?>
+<html>
+
+<head>
+<title>
+Εγραφφή σε σεμινάρια
+</title>
+</head>
+
+<body>
+
+<?php
+
+
+?>
+
+<?php
+  include "connect_db.php";
+
+  echo "<br><br><b> <div align=\"right\"> Είστε συνδεδεμένοι με όνομα χρήστη " .$_SESSION['user_name']. "</div></b> </b>";
+	echo "<br><br><b><div align=\"right\"> <a href=\"welcomeuser.php\">Επιστροφή στη κεντρική σελίδα</a></b> </b>";
+	function isRegisted($semid)
+		{
+		 include "connect_db.php";
+
+		 $query = "select * from userseminars where semid='$semid'";
+	mysql_select_db($database);
+	$results_id = mysql_query($query,$connect) or die (mysql_error());
+
+	if(mysql_num_rows($results_id))
+	{
+		
+		while($semi = mysql_fetch_array($results_id))
+		{
+			$id = $semi['userid'];
+			$sid = $semi['semid'];
+			
+			if($id == $_SESSION['user_id']	&& $sid == $semid)
+				return true;
+		}
+			
+	}
+	return false;
+}
+	
+  function registed($i)
+  {
+	include "connect_db.php";
+	$query = "select * from userseminars where semid = '$i'";
+	mysql_select_db($database);
+	$results_id = mysql_query($query,$connect) or die (mysql_error());
+
+	if(mysql_num_rows($results_id))
+	{
+		$registed=0;
+		while($semi = mysql_fetch_array($results_id))
+		{
+			$registed++;
+		}
+		return $registed;
+
+		
+	}
+	else
+		return 0;
+  }
+
+  if(!$connect)
+{
+		die("Could not connect to server " .$host . " User :" . $user);
+}
+else
+{
+	$query = "select * from seminars";
+	mysql_select_db($database);
+	$results_id = mysql_query($query,$connect) or die (mysql_error());
+
+	if(mysql_num_rows($results_id))
+	{
+		echo "<table border=1>";
+		echo "<tr><td>Α/Α</td><td>Όνομα σεμιναρίου</td><td>Αριθμός συμμετοχόντων</td></tr>";
+		$counter=0;
+		while($semi = mysql_fetch_array($results_id))
+		{
+			$counter++;
+			$id = $semi['semid'];
+			$title = $semi['semtitle'];
+			
+
+			echo "<tr>";
+			echo "<td>$counter</td>";
+			echo "<td>$title</td>";
+			$register  = registed($id);
+				echo "<td>$register</td>";
+			if (!isRegisted($id)){
+				echo "<form action=\"addtoseminar.php?id=$id\" method=\"POST\">";
+				echo "<td><input type=\"submit\" name='$id' value=\"Εγγραφή\" enabled></td>";
+				echo "<td><input type=\"submit\" name='$id' value=\"Απεγγραφή\" disabled></td>";
+				echo "</form>";
+			}
+				//echo "<td><button enabled >Εγγραφή</button></td><td><button disabled>Απεγγραφή</button></td>";
+			else{
+				//echo "<td><button disabled>Εγγραφή</button></td><td><button enabled>Απεγγραφή</button></td>";
+				echo "<form action=\"deletefromseminar.php?id=$id\" method=\"POST\">";
+				echo "<td><input type=\"submit\" name='$id' value=\"Εγγραφή\" disabled></td>";
+				echo "<td><input type=\"submit\" name='$id' value=\"Απεγγραφή\" enabled></td>";
+				echo "</form>";
+			}
+
+			echo "</tr>";
+		}
+
+		echo "</table>";
+	}
+	else
+		echo('Δεν υπάρχει κανένα διαθέσιμο σεμινάριο.');
+}
+
+
+echo "<br><br><b><font size=6>Σεμινάρια στα οποία είστε εγγεγραμμένος</font><br></b>";
+
+$userid = $_SESSION['user_id'];
+$query = "select * from userseminars where userid = '$userid'";
+	mysql_select_db($database);
+	$results_id = mysql_query($query,$connect) or die (mysql_error());
+	
+
+	if(mysql_num_rows($results_id))
+	{
+		$counter=0;
+		while($newarray = mysql_fetch_array($results_id))
+		{
+			$counter++;
+			$semid=$newarray['semid'];
+
+			$query1 = "select * from seminars where semid = '$semid'";
+				mysql_select_db($database);
+			$results_id1 = mysql_query($query1,$connect) or die (mysql_error());
+			while($newarray1 = mysql_fetch_array($results_id1))
+			{
+				$titl = $newarray1['semtitle'];
+				echo "<br>$counter.$titl</br>";
+			}
+		}
+	}
+	else
+	{
+		echo "<br>Δεν είστε εγγεγραμμένος σε κάποιο σεμινάριο.";
+	}
+
+?>
+
+
+<?php
+	mysql_close($connect);
+?>
+</body>
+
+</html>

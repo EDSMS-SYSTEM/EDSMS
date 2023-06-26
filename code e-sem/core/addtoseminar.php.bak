@@ -1,0 +1,16 @@
+
+<?php session_start(); ?>
+<?php
+
+include "connection2.php";
+
+
+$semid = $_GET['id'];
+
+$st = $con->prepare('INSERT INTO userseminars VALUES (?,?)');
+$st->bindParam(1,$_SESSION['user_id']);
+$st->bindParam(2,$semid);
+$st->execute();
+
+echo "<script>window.location = 'http://www.yourdomain.com'</script>";
+?>

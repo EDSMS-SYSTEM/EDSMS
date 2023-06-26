@@ -1,0 +1,13 @@
+<?php
+
+$host ='localhost';
+$user = 'root';
+$passwd = 'root';
+$database = 'dbseminars';
+$table_name = 'users';
+$connect = mysql_connect($host,$user,$passwd);
+
+
+mysql_query('set character set utf8',$connect);
+mysql_query("SET NAMES 'utf8'",$connect);
+?>

@@ -1,0 +1,17 @@
+<?php session_start(); ?>
+<?php
+
+include "connection2.php";
+
+
+$semid = $_GET['id'];
+
+$st = $con->prepare('DELETE FROM userseminars WHERE userid=? AND semid=?');
+$st->bindParam(1,$_SESSION['user_id']);
+$st->bindParam(2,$semid);
+$st->execute();
+
+header('Location : register_seminar.php');
+exit();
+
+?>
